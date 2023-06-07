@@ -1,0 +1,58 @@
+size = 3
+client_list = [None] * size
+
+
+def add_client():
+    client_id = int(input("Enter client ID: "))
+    name = input("Enter client name: ")
+    telephone = input("Enter client telephone: ")
+    client_details = [client_id, name, telephone]
+
+    index = client_id % size
+    for i in range(size):
+        if client_list[index] is None:
+            client_list[index] = client_details
+            print("Adding data at index", index, client_details)
+            return
+        index = (index + 1) % size
+    print("No available slots to add the client.")
+
+
+def search_client():
+    client_id = int(input("Enter client ID to search: "))
+    index = client_id % size
+    for i in range(size):
+        if client_list[index] is not None:
+            if client_list[index][0] == client_id:
+                print("Client found at index", index, client_list[index])
+                return
+        index = (index + 1) % size
+    print("Client not found.")
+
+
+def delete_client():
+    client_id = int(input("Enter client ID to delete: "))
+    index = client_id % size
+    for i in range(size):
+        if client_list[index] is not None:
+            if client_list[index][0] == client_id:
+                client_list[index] = None
+                print("Client deleted.")
+                return
+        index = (index + 1) % size
+    print("Client not found.")
+
+
+# Add clients
+add_client()
+add_client()
+add_client()
+
+# Search client
+search_client()
+
+# Delete client
+delete_client()
+
+# Search client after deletion
+search_client()

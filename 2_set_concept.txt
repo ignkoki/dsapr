@@ -1,0 +1,43 @@
+size = 10  # Size of the hash table
+hash_table = [[] for _ in range(size)]  # Initialize the hash table as a list of empty lists
+
+def hash_function(key):
+    return sum(ord(char) for char in key) % size  # Simple hash function that calculates the sum of ASCII values
+
+def insert(key, value):
+    index = hash_function(key)
+    bucket = hash_table[index]  # Get the bucket at the calculated index
+    for item in bucket:
+        if item[0] == key:  # If key already exists, update the value
+            item[1] = value
+            return
+    bucket.append([key, value])  # Add the (key, value) pair to the bucket
+
+def find(key):
+    index = hash_function(key)
+    bucket = hash_table[index]  # Get the bucket at the calculated index
+    for item in bucket:
+        if item[0] == key:  # If key is found, return the corresponding value
+            return item[1]
+    return None  # Key not found
+
+def delete(key):
+    index = hash_function(key)
+    bucket = hash_table[index]  # Get the bucket at the calculated index
+    for i, item in enumerate(bucket):
+        if item[0] == key:  # If key is found, remove the (key, value) pair from the bucket
+            del bucket[i]
+            return
+
+# Example usage:
+insert("apple", 42)
+insert("banana", 23)
+insert("orange", 55)
+
+print(find("apple"))  # Output: 42
+print(find("banana"))  # Output: 23
+print(find("orange"))  # Output: 55
+print(find("grape"))  # Output: None
+
+delete("banana")
+print(find("banana"))  # Output: None
