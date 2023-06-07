@@ -1,232 +1,270 @@
-#include<iostream>
+#include <iostream>
+#include <cstring>
 using namespace std;
+
 struct node
 {
-    int data;
-    node *L;
-    node *R;
+    char k[20];
+    char m[20];
+    node* left;
+    node* right;
 };
-node *root,*temp;
-int count,key;
 
-class bst
+class dict
 {
-    public:
+public:
+    node* root;
     void create();
-    void insert(node*,node*);
-    void disin(node*);
-    void dispre(node*);
-    void dispost(node*);
-    void search(node*,int);
-    int height(node*);
-    void mirror(node*);
-    void min(node*);
-    bst()
-    {
-      root=NULL;
-      count=0;
-    }
+    void disp(node* root);
+    void insert(node* root, node* temp);
+    int search(node* root, const char* k);
+    int update(node* root, const char* k);
+    node* del(node* root, const char* k);
+    node* findMin(node* root);
 };
 
-void bst::create()
+void dict::create()
 {
-    char ans;
+    node* temp;
+    int ch;
+
     do
     {
-        temp=new node;
-        cout<<"Enter the data : "; 
-        cin>>temp->data;
-        temp->L=NULL;
-        temp->R=NULL;
-        if(root==NULL)
+        temp = new node;
+        cout << "\nEnter Keyword: ";
+        cin >> temp->k;
+        cout << "Enter Meaning: ";
+        cin >> temp->m;
+
+        temp->left = NULL;
+        temp->right = NULL;
+
+        if (root == NULL)
         {
-            root=temp;
+            root = temp;
         }
         else
-            insert(root,temp);
-        cout<<"Do you want to insert more value : "<<endl; cin>>ans;
-        count++;
-        cout<<endl;
-    }while(ans=='y');
-    cout<<"The Total no.of nodes are:"<<count;
-} 
-void bst::insert(node *root,node* temp) 
-{ 
-    if(temp->data>root->data)
+        {
+            insert(root, temp);
+        }
+
+        cout << "\nDo you want to add more keywords? (1/0): ";
+        cin >> ch;
+    } while (ch == 1);
+}
+
+void dict::insert(node* root, node* temp)
+{
+    if (strcmp(temp->k, root->k) < 0)
     {
-        if(root->R==NULL)
-        {
-            root->R=temp;
-        }
+        if (root->left == NULL)
+            root->left = temp;
         else
-            insert(root->R,temp);
+            insert(root->left, temp);
     }
     else
     {
-        if(root->L==NULL)
-        {
-            root->L=temp;
-        }
+        if (root->right == NULL)
+            root->right = temp;
         else
-            insert(root->L,temp);
+            insert(root->right, temp);
     }
 }
 
-void bst::disin(node *root)
+void dict::disp(node* root)
 {
-    if(root!=NULL)
+    if (root != NULL)
     {
-        disin(root->L);
-        cout<<root->data<<"\t"; 
-        disin(root->R);
-        count++;
+        disp(root->left);
+        cout << "\nKey Word: " << root->k;
+        cout << "\tMeaning: " << root->m;
+        disp(root->right);
     }
 }
 
-void bst::dispre(node *root)
+int dict::search(node* root, const char* k)
 {
-    if(root!=NULL)
-    {
-        cout<<root->data<<"\t"; 
-        dispre(root->L);
-        dispre(root->R);
-    }
-}
+    int comparisons = 0;
 
-void bst::dispost(node *root)
-{
-    if(root!=NULL)
+    while (root != NULL)
     {
-        dispost(root->L);
-        dispost(root->R);
-        cout<<root->data<<"\t";
-    }
-}
+        comparisons++;
 
-void bst::search(node * root,int key)
-{
-    int flag=0;
-    cout<<"\nEnter your key : "<<endl; 
-    cin>>key;
-    temp=root;
-    while(temp!=NULL)
-    {
-        if(key==temp->data)
+        if (strcmp(k, root->k) == 0)
         {
-            cout<<"           KEY FOUND           \n"; 
-            flag=1; 
-            break;  
-        } 
-        node *parent=temp; 
-        if(key>parent->data)
+            cout << "\nNo of Comparisons: " << comparisons;
+            return 1;
+        }
+        else if (strcmp(k, root->k) < 0)
         {
-            temp=temp->R;
+            root = root->left;
         }
         else
         {
-            temp=temp->L;
+            root = root->right;
         }
     }
-    if(flag==0)
+
+    return -1;
+}
+
+int dict::update(node* root, const char* k)
+{
+    while (root != NULL)
     {
-        cout<<"            KEY NOT FOUND              "<<endl; 
-    
-    } 
-} 
-int bst::height(node *root) 
-{ 
-    int hl,hr; 
-    if(root==NULL)
-    { 
-        return 0; 
-        
-    } 
-    else if(root->L==NULL && root->R==NULL)
-    {
-        return 1;
+        if (strcmp(k, root->k) == 0)
+        {
+            cout << "\nEnter the new meaning of the keyword " << root->k << ": ";
+            cin >> root->m;
+            return 1;
+        }
+        else if (strcmp(k, root->k) < 0)
+        {
+            root = root->left;
+        }
+        else
+        {
+            root = root->right;
+        }
     }
-    cout<<endl; 
-    hr=1+height(root->R);
-    hl=1+height(root->L);
-    if(hr>hl)
+
+    return -1;
+}
+
+node* dict::del(node* root, const char* k)
+{
+    if (root == NULL)
     {
-        return(hr);
+        cout << "\nElement not found";
+        return root;
+    }
+
+    if (strcmp(k, root->k) < 0)
+    {
+        root->left = del(root->left, k);
+        return root;
+    }
+    else if (strcmp(k, root->k) > 0)
+    {
+        root->right = del(root->right, k);
+        return root;
+    }
+
+    if (root->left == NULL && root->right == NULL)
+    {
+        delete root;
+        return NULL;
+    }
+    else if (root->right == NULL)
+    {
+        node* temp = root;
+        root = root->left;
+        delete temp;
+        return root;
+    }
+    else if (root->left == NULL)
+    {
+        node* temp = root;
+        root = root->right;
+        delete temp;
+        return root;
     }
     else
     {
-        return(hl);
-    }   
+        node* temp = findMin(root->right);
+        strcpy(root->k, temp->k);
+        strcpy(root->m, temp->m);
+        root->right = del(root->right, temp->k);
+        return root;
+    }
 }
 
-void bst::min(node *root)
+node* dict::findMin(node* root)
 {
-    temp=root;
-    cout<<endl; 
-    while(temp->L!=NULL)
+    while (root->left != NULL)
     {
-        temp=temp->L;
+        root = root->left;
     }
-    cout<<temp->data;
-}
-
-void bst::mirror(node *root)
-{
-    temp=root;
-    if(root!=NULL)
-    {
-        mirror(root->L);
-        mirror(root->R);
-        temp=root->L;
-        root->L=root->R;
-        root->R=temp;
-    }
+    return root;
 }
 
 int main()
 {
-    bst t;
     int ch;
-    char ans;
+    dict d;
+    d.root = NULL;
+
     do
     {
-        cout<<"\n1) Insert new node 2)number of nodes in longest path 3) minimum 4) mirror 5) search 6) inorder 7) preorder 8) postorder"<<endl; cin>>ch;
-        switch(ch)
+        cout << "\nMenu\n1. Create\n2. Display\n3. Search\n4. Update\n5. Delete\nEnter your choice: ";
+        cin >> ch;
+
+        switch (ch)
         {
             case 1:
-                t.create();
+                d.create();
                 break;
             case 2:
-                cout<<"\n Number of nodes in longest path:"<<t.height(root);
+                if (d.root == NULL)
+                {
+                    cout << "\nNo keywords in the dictionary.";
+                }
+                else
+                {
+                    cout << "\nDictionary Contents:";
+                    d.disp(d.root);
+                }
                 break;
             case 3:
-                cout<<"\nThe min element is:";
-                t.min(root);
+                if (d.root == NULL)
+                {
+                    cout << "\nDictionary is empty. Add keywords first.";
+                }
+                else
+                {
+                    cout << "\nEnter the keyword you want to search: ";
+                    char k[20];
+                    cin >> k;
+                    if (d.search(d.root, k) == 1)
+                        cout << "\nKeyword Found.";
+                    else
+                        cout << "\nKeyword Not Found.";
+                }
                 break;
             case 4:
-                t.mirror(root);
-                cout<<"\nThe mirror of tree is: ";
-                t.disin(root);
+                if (d.root == NULL)
+                {
+                    cout << "\nDictionary is empty. Add keywords first.";
+                }
+                else
+                {
+                    cout << "\nEnter the keyword whose meaning you want to update: ";
+                    char k[20];
+                    cin >> k;
+                    if (d.update(d.root, k) == 1)
+                        cout << "\nMeaning Updated.";
+                    else
+                        cout << "\nKeyword Not Found.";
+                }
                 break;
             case 5:
-                t.search(root,key);
+                if (d.root == NULL)
+                {
+                    cout << "\nDictionary is empty. Add keywords first.";
+                }
+                else
+                {
+                    cout << "\nEnter the keyword you want to delete: ";
+                    char k[20];
+                    cin >> k;
+                    d.root = d.del(d.root, k);
+                }
                 break;
-            case 6:
-                cout<<"\n***************INORDER**************"<<endl;
-                t.disin(root);
+            default:
+                cout << "\nInvalid choice.";
                 break;
-            case 7:
-                cout<<"\n***************PREORDER**************"<<endl;
-                t.dispre(root);
-                break;
-            case 8:
-                cout<<"\n*******************POSTORDER**************"<<endl;
-                t.dispost(root);
-            break;
         }
-        cout<<"\nDo you want to continue : "; cin>>ans;
-    }while(ans=='y');
-    return 0;
+    } while (ch <= 5);
+
+    return 0;
 }
-
-
-
